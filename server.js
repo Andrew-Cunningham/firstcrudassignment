@@ -5,7 +5,7 @@ const port = process.env.PORT || 8000;
 // Use the array below to store the users. Add/remove/update items in it based off
 let storage = [];
 app.use(bodyParser.json());
-
+let fs=require("fs")
 //add new user
 app.post('/storage/:index', function(req, res) {
   var index = Number.parseInt(req.params.index);
@@ -22,8 +22,8 @@ app.post('/storage/:index', function(req, res) {
   }
  //console.log(req)
   storage[index] = newUser;
- 
-  //console.log(storage)
+  fs.writeFileSync('./storage.json', JSON.stringify(storage));
+  console.log(storage)
   res.json(newUser);
 });
 
@@ -44,19 +44,24 @@ app.get('/storage/:name', function(req, res) {
   }
   res.json(userByName);
 });
-
+//Update user
 app.put('/storage/:name', function(req, res) {
   let names=req.params.name
   let userByNameUpdate={}
+  console.log('UPDATE: '+ storage)
   for(let i=0; i< storage.length; i++){
-   // console.log(storage[i]['name'])
+   console.log(storage[i]['name'])
     if(storage[i]['name'] == names){
       userByNameUpdate=req.body
       storage[i]=req.body
+      console.log(storage[i])
     }
   }
+  
+  fs.writeFileSync('./storage.json', JSON.stringify(storage));
   res.json(userByNameUpdate);
 });
+//delete user
 app.delete('/storage/:name', function(req, res) {
   let names=req.params.name
   for(let i=0; i< storage.length; i++){
@@ -67,6 +72,7 @@ app.delete('/storage/:name', function(req, res) {
      }
    }
    console.log(storage)
+   fs.writeFileSync('./storage.json', JSON.stringify(storage));
    res.json(storage)
   });
 
